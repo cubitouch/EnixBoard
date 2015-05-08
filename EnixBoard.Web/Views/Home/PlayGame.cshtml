@@ -11,27 +11,29 @@
         height: 54px;
     }
 </style>
-<h2>
-    @Model.Game.GameTitle
-    <a class="btn btn-default" data-toggle="modal" data-target="#help"><i class="glyphicon glyphicon-question-sign"></i>&nbsp;Help</a>
-</h2>
-<span id="indicator"></span>
-<div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="helpLabel">@Model.Game.GameTitle Winning Rule</h4>
-            </div>
-            <div class="modal-body">
-                @Model.Game.WinningRule()
+<div class="text-center">
+    <h2>
+        @Model.Game.GameTitle
+        <a class="btn btn-default" data-toggle="modal" data-target="#help"><i class="glyphicon glyphicon-question-sign"></i>&nbsp;Help</a>
+    </h2>
+    <span id="indicator"></span>
+    <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="helpLabel">@Model.Game.GameTitle Winning Rule</h4>
+                </div>
+                <div class="modal-body">
+                    @Model.Game.WinningRule()
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="container-fuild">
-    <div id="board" class="row">
-        @Html.Partial("Board", Model)
+    <div class="container-fuild">
+        <div id="board" class="row">
+            @Html.Partial("Board", Model)
+        </div>
     </div>
 </div>
 @section scripts{

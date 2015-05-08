@@ -22,14 +22,12 @@
         height: 40px;
     }
 </style>
-<div class="col-sm-4">
+<div class="col-sm-12 text-center">
     @foreach (GameCard card in Model.Game.GetPlayerById(Model.PlayerId).Cards)
     {
         <a class="btn btn-primary card" data-id="@card.Id" @(Model.Game.CurrentPlayerId == Model.PlayerId ? "" : "disabled")><i class="glyphicon glyphicon-tint"></i><br />@card.Value</a>
     }
     <br /><br />
-</div>
-<div class="col-sm-8">
     @if (Model.Game.PlayerA.Id == Model.PlayerId)
     {
         <div class="row">
