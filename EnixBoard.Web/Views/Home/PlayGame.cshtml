@@ -1,0 +1,130 @@
+﻿@using EnixBoard.Business
+@using EnixBoard.Web.Models
+
+@model JoinModel
+@{
+    ViewBag.Title = "PlayGame";
+}
+<style>
+    .card, .cell {
+        width: 40px;
+        height: 54px;
+    }
+</style>
+<h2>
+    PlayGame
+    <a class="btn btn-default" data-toggle="modal" data-target="#help"><i class="glyphicon glyphicon-question-sign"></i>&nbsp;Help</a>
+</h2>
+<span id="indicator"></span>
+<div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="helpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="helpLabel">Winning Rule</h4>
+            </div>
+            <div class="modal-body">
+                @Model.Game.WinningRule()
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fuild">
+    <div id="board" class="row">
+        @Html.Partial("Board", Model)
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(function () {
+            initGame();
+        });
+        function initGame() {
+            if (_gameWait != undefined) {
+                clearTimeout(_gameWait);
+            }
+            $.post("/Home/StartGame", {
+                id: '@Model.Game.Id'
+            }, function (data) {
+                if (data == 0) {
+                    initBoard();
+                } else {
+                    $('#indicator').html('Waiting for game to begin <i class="glyphicon glyphicon-time"></i> ' + data + ' second(s)...');
+                    waitForGame();
+                }
+            });
+        }
+        var _gameWait;
+        function waitForGame() {
+            _gameWait = setTimeout(function () { initGame(); }, 1000);
+        }
+        function initBoard() {
+            if (_playerWait != undefined) {
+                clearTimeout(_playerWait);
+            }
+            $.post("/Home/CurrentPlayerId", {
+                id: '@Model.Game.Id'
+            }, function (data) {
+                if (data == '') {
+                    $.post("/Home/WinnerId", {
+                        id: '@Model.Game.Id'
+                    }, function (data) {
+                        if (data == '00000000-0000-0000-0000-000000000000') {
+                            $('#indicator').html('You draw <i class="glyphicon glyphicon-flag"><i/>');
+                        } else if (data == '@Model.PlayerId') {
+                            $('#indicator').html('You win <i class="glyphicon glyphicon-thumbs-up"><i/>');
+                        } else {
+                            $('#indicator').html('You loose <i class="glyphicon glyphicon-thumbs-down"><i/>');
+                        }
+                    });
+                    $.post("/Home/RefreshBoard", {
+                        id: '@Model.Game.Id',
+                        playerId: '@Model.PlayerId'
+                    }, function (data) {
+                        $('#board').html(data);
+                        activeBoard();
+                    });
+                }
+                else if (data == '@Model.PlayerId') {
+                    $('#indicator').html('Waiting for you <i class="glyphicon glyphicon-time"><i/>');
+                    $.post("/Home/RefreshBoard", {
+                        id: '@Model.Game.Id',
+                        playerId: '@Model.PlayerId'
+                    }, function (data) {
+                        $('#board').html(data);
+                        activeBoard();
+                    });
+                } else {
+                    $('#indicator').html('Waiting for your opponent <i class="glyphicon glyphicon-time"><i/>');
+                    waitForPlayer();
+                }
+            });
+        }
+        var _playerWait;
+        function waitForPlayer() {
+            _playerWait = setTimeout(function () { initBoard(); }, 1000);
+        }
+        function activeBoard() {
+            $('.card').click(function () {
+                $('.card').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('.cell').click(function () {
+                var cardActive = $('.card.active');
+                var cellActive = $(this);
+                if (cardActive != undefined) {
+                    $.post("/Home/PlaceCard", {
+                        id: '@Model.Game.Id',
+                        playerId: '@Model.PlayerId',
+                        cardId: cardActive.data('id'),
+                        x: cellActive.data('x'),
+                        y: cellActive.data('y')
+                    }, function (data) {
+                        $('#board').html(data);
+                        initBoard();
+                    });
+                }
+            });
+        }
+    </script>
+}

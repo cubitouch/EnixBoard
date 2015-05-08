@@ -1,0 +1,80 @@
+﻿@using EnixBoard.Business
+@using EnixBoard.Web.Models
+
+@model JoinModel
+@{
+    Layout = null;
+}
+<style>
+    .mini-cell-top,
+    .mini-cell-left,
+    .mini-cell-corner {
+        display: inline-block;
+        text-align: center;
+    }
+
+    .mini-cell-top {
+        width: 40px;
+    }
+
+    .mini-cell-left {
+        width: 14px;
+        height: 40px;
+    }
+</style>
+<div class="col-sm-4">
+    @foreach (GameCard card in Model.Game.GetPlayerById(Model.PlayerId).Cards)
+    {
+        <a class="btn btn-primary card" data-id="@card.Id" @(Model.Game.CurrentPlayerId == Model.PlayerId ? "" : "disabled")><i class="glyphicon glyphicon-tint"></i><br />@card.Value</a>
+    }
+    <br /><br />
+</div>
+<div class="col-sm-8">
+    @if (Model.Game.PlayerA.Id == Model.PlayerId)
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="mini-cell-top"><i class="glyphicon glyphicon-triangle-bottom text-primary"></i></div>
+                <div class="mini-cell-top"><i class="glyphicon glyphicon-triangle-bottom text-primary"></i></div>
+                <div class="mini-cell-top"><i class="glyphicon glyphicon-triangle-bottom text-primary"></i></div>
+                <div class="mini-cell-top"><i class="glyphicon glyphicon-triangle-bottom text-primary"></i></div>
+                <div class="mini-cell-top"><i class="glyphicon glyphicon-triangle-bottom text-primary"></i></div>
+            </div>
+        </div>
+    }
+    @foreach (GameRow row in Model.Game.Board.Rows)
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                @if (Model.Game.PlayerB.Id == Model.PlayerId)
+                {
+                    <div class="mini-cell-left"><i class="glyphicon glyphicon-triangle-right text-primary"></i></div>
+                }
+                @foreach (GameCell cell in row.Cells)
+                {
+                    string color = "default";
+                    string winnerColor = (Model.Game.WinnerId == Model.PlayerId ? "primary" : "danger");
+                    EnixBoard.Business.Games.RowColumnGame game = (EnixBoard.Business.Games.RowColumnGame)Model.Game;
+                    if (Model.Game.WinnerId != null)
+                    {
+                        if (game.WinningSide == WinningSideEnum.Columns && game.WinningIndex == row.Cells.IndexOf(cell) ||
+                            game.WinningSide == WinningSideEnum.Rows && game.WinningIndex == Model.Game.Board.Rows.IndexOf(row))
+                        {
+                            color = winnerColor;
+                        }
+                    }
+                    <a class="btn btn-@color cell" data-x="@Model.Game.Board.Rows.IndexOf(row)" data-y="@row.Cells.IndexOf(cell)" @(cell.IsFull() ? "disabled" : "")>
+                        @if (cell.IsFull())
+                        {
+                            <text><i class="glyphicon glyphicon-@(@Model.PlayerId != cell.Card.PlayerId ? "fire" : "tint") text-@(@Model.PlayerId != cell.Card.PlayerId ? "danger" : "info")"></i><br />@cell.Card.Value</text>
+                        }
+                        else
+                        {
+                            <text>&nbsp;<br />&nbsp;</text>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
