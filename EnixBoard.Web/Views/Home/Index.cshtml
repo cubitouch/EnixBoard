@@ -1,23 +1,20 @@
-﻿@model EnixBoard.Web.Models.JoinModel
+﻿@using EnixBoard.Web.Controllers;
+@model EnixBoard.Web.Models.JoinModel
 @{
     ViewBag.Title = "Home";
 }
-<div class="row form-horizontal">
-    <div class="col-sm-8 col-sm-offset-2">
-        New game ? @Html.ActionLink("Go!", "NewGame", null, new { @class = "btn btn-primary" })
+@*<div class="row form-horizontal">
+        <div class="col-sm-8 col-sm-offset-2">
+            New game ? @Html.ActionLink("Go!", "NewGame", null, new { @class = "btn btn-primary" })
+        </div>
     </div>
-</div>
-<hr />
+    <hr />*@
 <div class="row form-horizontal">
-    @foreach (KeyValuePair<string, string> gameType in EnixBoard.Web.Controllers.HomeController.GameList)
-    {
-        <text>@gameType.Key - @gameType.Value</text>
-    }
     @using (Html.BeginForm("JoinGame", "Home", FormMethod.Get))
     {
         <div class="col-sm-8 col-sm-offset-2">
-            Join game ?
-            @Html.EditorFor((m) => m.Game.Id)
+            Select your game type
+            @Html.DropDownListFor(m => m.GameType, HomeController.GameList, new { })
             <input type="submit" class="btn btn-primary" value="Go!" />
         </div>
     }

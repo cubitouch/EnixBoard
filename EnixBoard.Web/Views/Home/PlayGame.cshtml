@@ -3,7 +3,7 @@
 
 @model JoinModel
 @{
-    ViewBag.Title = "PlayGame";
+    ViewBag.Title = Model.Game.GameTitle;
 }
 <style>
     .card, .cell {
@@ -12,7 +12,7 @@
     }
 </style>
 <h2>
-    PlayGame
+    @Model.Game.GameTitle
     <a class="btn btn-default" data-toggle="modal" data-target="#help"><i class="glyphicon glyphicon-question-sign"></i>&nbsp;Help</a>
 </h2>
 <span id="indicator"></span>
@@ -21,7 +21,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="helpLabel">Winning Rule</h4>
+                <h4 class="modal-title" id="helpLabel">@Model.Game.GameTitle Winning Rule</h4>
             </div>
             <div class="modal-body">
                 @Model.Game.WinningRule()

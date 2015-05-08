@@ -10,6 +10,13 @@ namespace EnixBoard.Business.Games
 {
     public partial class RowColumnGame : Game
     {
+        public override string GameTitle
+        {
+            get
+            {
+                return "Row & Column";
+            }
+        }
         public WinningSideEnum WinningSide { get; set; }
         public int WinningIndex { get; set; }
         public override string WinningRule()

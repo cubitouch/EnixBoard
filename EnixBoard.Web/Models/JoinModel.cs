@@ -10,5 +10,6 @@ namespace EnixBoard.Web.Models
     {
         public Guid PlayerId { get; set; }
         public Game Game { get; set; }
+        public string GameType { get; set; }
     }
 }

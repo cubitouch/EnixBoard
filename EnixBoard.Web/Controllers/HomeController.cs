@@ -12,17 +12,20 @@ namespace EnixBoard.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private static Dictionary<string, string> _gameList;
-        public static IDictionary<string, string> GameList
+        private static List<SelectListItem> _gameList;
+        public static IEnumerable<SelectListItem> GameList
         {
             get
             {
                 if (_gameList == null)
                 {
-                    _gameList = new Dictionary<string, string>();
+                    _gameList = new List<SelectListItem>();
                     foreach (Type type in Assembly.GetAssembly(typeof(Game)).GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(Game))))
                     {
-                        _gameList.Add(type.FullName, type.Name);
+                        SelectListItem item = new SelectListItem();
+                        item.Text = (Activator.CreateInstance("EnixBoard.Business", type.FullName).Unwrap() as Game).GameTitle;
+                        item.Value = type.FullName;
+                        _gameList.Add(item);
                     }
                 }
                 return _gameList;
@@ -33,9 +36,9 @@ namespace EnixBoard.Web.Controllers
             return View();
         }
 
-        public ActionResult NewGame()
+        public ActionResult NewGame(string gameType)
         {
-            Game game = new RowColumnGame();
+            Game game = (Game)Activator.CreateInstance("EnixBoard.Business", gameType).Unwrap();
             game.Init();
             game.PlayerA.Action();
             HttpContext.Application[game.Id.ToString()] = game;
@@ -55,33 +58,35 @@ namespace EnixBoard.Web.Controllers
         public ActionResult JoinGame(JoinModel model)
         {
             Game game = null;
-            if (HttpContext.Application.AllKeys.Contains(model.Game.Id.ToString()))
+            if (model.Game != null)
             {
-                game = (Game)HttpContext.Application[model.Game.Id.ToString()];
-            }
-            else
-            {
-                foreach (string key in HttpContext.Application.AllKeys)
+                if (HttpContext.Application.AllKeys.Contains(model.Game.Id.ToString()))
                 {
-                    game = (Game)HttpContext.Application[key];
-                    if (game.PlayerB.Active)
+                    game = (Game)HttpContext.Application[model.Game.Id.ToString()];
+                }
+                else
+                {
+                    foreach (string key in HttpContext.Application.AllKeys)
                     {
-                        game = null;
-                    }
-                    else
-                    {
-                        break;
+                        game = (Game)HttpContext.Application[key];
+                        if (game.PlayerB.Active)
+                        {
+                            game = null;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
+                if (game != null)
+                {
+                    game.PlayerB.Action();
+                    game.Start();
+                    return RedirectToAction("PlayGame", new { id = game.Id, playerId = game.PlayerB.Id });
+                }
             }
-            if (game != null)
-            {
-                game.PlayerB.Action();
-                game.Start();
-                return RedirectToAction("PlayGame", new { id = game.Id, playerId = game.PlayerB.Id });
-
-            }
-            return RedirectToAction("Index");
+            return NewGame(model.GameType);
         }
         public ActionResult PlayGame(Guid id, Guid playerId)
         {

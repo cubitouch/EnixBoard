@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace EnixBoard.Business
 {
-    public class Game
+    public abstract class Game
     {
+        public virtual string GameTitle
+        {
+            get
+            {
+                return this.GetType().Name;
+            }
+        }
         public Guid Id { get; set; }
         public GameBoard Board { get; set; }
 
