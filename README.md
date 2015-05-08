@@ -24,3 +24,4 @@ You just need to overrride:
 That's it! If you followed these steps you just created a new game that you can use both for Web and Mobile app :)
 
 To see how you can render this as a Web app', have a look at the [EnixBoard.Web](https://github.com/cubitouch/EnixBoard/tree/master/EnixBoard.Web) sample project.
+To try it, let's play on [Azure](http://enixboard.azurewebsites.net/) :)

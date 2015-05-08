@@ -9,13 +9,19 @@
         </div>
     </div>
     <hr />*@
-<div class="row form-horizontal">
+<div class="row form-inline">
     @using (Html.BeginForm("JoinGame", "Home", FormMethod.Get))
     {
-        <div class="col-sm-8 col-sm-offset-2">
-            Select your game type
-            @Html.DropDownListFor(m => m.GameType, HomeController.GameList, new { })
-            <input type="submit" class="btn btn-primary" value="Go!" />
+        <div class="col-sm-8 col-sm-offset-2 form-group">
+            <div class="">
+                @Html.LabelFor(m => m.GameType, "Select your game type", new { @class = "col-sm-3" })
+                @Html.DropDownListFor(m => m.GameType, HomeController.GameList, new { @class = "form-control col-sm-6" })
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="glyphicon glyphicon-star"></i> Go
+                    </button>
+                </div>
+            </div>
         </div>
     }
 </div>
