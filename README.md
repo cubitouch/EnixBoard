@@ -1,5 +1,5 @@
 # EnixBoard
-Modular library for board playing game
+Modular library to help you build a board playing game
 
 # Why
 This library allow you to create board game by simply having:
@@ -10,7 +10,7 @@ This library allow you to create board game by simply having:
 - An AI
 
 # Practice
-To add a game, juste create a class that inherit Game.
+To add a game, simply create a class that inherit Game.
 Interrested ? Have a look at the [RowColumnGame](https://github.com/cubitouch/EnixBoard/blob/master/EnixBoard.Business/Games/RowColumnGame.cs) class.
 
 You just need to overrride:

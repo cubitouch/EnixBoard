@@ -121,6 +121,7 @@ namespace EnixBoard.Business
             else
             {
                 player = GetPlayerById(CurrentPlayerId);
+                player.Action();
                 if (player.IsAI)
                 {
                     PlayAI(player);

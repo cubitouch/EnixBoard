@@ -48,7 +48,7 @@ namespace EnixBoard.Web.Controllers
         {
             Game game = (Game)HttpContext.Application[id.ToString()];
 
-            if (new TimeSpan(DateTime.Now.Ticks - game.PlayerB.LastActivityDate.Ticks).TotalSeconds > 15 && !game.PlayerB.IsAI)
+            if (new TimeSpan(DateTime.Now.Ticks - game.PlayerB.LastActivityDate.Ticks).TotalSeconds > 15 && !game.PlayerB.Active)
             {
                 game.PlayerB.SwitchToAI(game);
                 game.Start();
@@ -79,20 +79,36 @@ namespace EnixBoard.Web.Controllers
                         }
                     }
                 }
-                if (game != null)
+            }
+
+            if (game != null)
+            {
+                game.PlayerB.Action();
+                game.Start();
+                return RedirectToAction("PlayGame", new { id = game.Id, playerId = game.PlayerB.Id });
+            }
+
+            if (game == null)
+            {
+                foreach (string key in HttpContext.Application.AllKeys)
                 {
-                    game.PlayerB.Action();
-                    game.Start();
-                    return RedirectToAction("PlayGame", new { id = game.Id, playerId = game.PlayerB.Id });
+                    game = (Game)HttpContext.Application[key];
+                    if (game.ToString() == model.GameType && !game.PlayerB.Active)
+                    {
+                        game.PlayerB.Action();
+                        game.Start();
+                        return RedirectToAction("PlayGame", new { id = game.Id, playerId = game.PlayerB.Id });
+                    }
                 }
             }
+
             return NewGame(model.GameType);
         }
         public ActionResult PlayGame(Guid id, Guid playerId)
         {
             return View(new JoinModel() { Game = HttpContext.Application[id.ToString()] as Game, PlayerId = playerId });
         }
-        public string CurrentPlayerId(Guid id)
+        public string CurrentPlayerId(Guid id, Guid playerId)
         {
             Game game = (Game)HttpContext.Application[id.ToString()];
             GamePlayer player = game.GetPlayerById(game.CurrentPlayerId);
@@ -105,6 +121,10 @@ namespace EnixBoard.Web.Controllers
             if (game.Board.IsFull())
             {
                 return "";
+            }
+            if (game.GetPlayerById(playerId).IsAI)
+            {
+                return "AI";
             }
             return game.CurrentPlayerId.ToString();
         }

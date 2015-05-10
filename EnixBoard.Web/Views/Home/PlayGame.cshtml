@@ -65,9 +65,12 @@
                 clearTimeout(_playerWait);
             }
             $.post("/Home/CurrentPlayerId", {
-                id: '@Model.Game.Id'
+                id: '@Model.Game.Id',
+                playerId: '@Model.PlayerId'
             }, function (data) {
-                if (data == '') {
+                if (data == 'AI') {
+                    $('#indicator').html('You have been replaced by an other player');
+                }else if (data == '') {
                     $.post("/Home/WinnerId", {
                         id: '@Model.Game.Id'
                     }, function (data) {

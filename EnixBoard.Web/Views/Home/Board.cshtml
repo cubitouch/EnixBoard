@@ -25,7 +25,7 @@
 <div class="col-sm-12 text-center">
     @foreach (GameCard card in Model.Game.GetPlayerById(Model.PlayerId).Cards)
     {
-        <a class="btn btn-primary card" data-id="@card.Id" @(Model.Game.CurrentPlayerId == Model.PlayerId ? "" : "disabled")><i class="glyphicon glyphicon-tint"></i><br />@card.Value</a>
+        <a class="btn btn-primary card" data-id="@card.Id" @(Model.Game.CurrentPlayerId == Model.PlayerId && !Model.Game.GetPlayerById(Model.PlayerId).IsAI ? "" : "disabled")><i class="glyphicon glyphicon-tint"></i><br />@card.Value</a>
     }
     <br /><br />
     @if (Model.Game.PlayerA.Id == Model.PlayerId)
@@ -61,7 +61,7 @@
                             color = winnerColor;
                         }
                     }
-                    <a class="btn btn-@color cell" data-x="@Model.Game.Board.Rows.IndexOf(row)" data-y="@row.Cells.IndexOf(cell)" @(cell.IsFull() ? "disabled" : "")>
+                    <a class="btn btn-@color cell" data-x="@Model.Game.Board.Rows.IndexOf(row)" data-y="@row.Cells.IndexOf(cell)" @(cell.IsFull() || Model.Game.GetPlayerById(Model.PlayerId).IsAI ? "disabled" : "")>
                         @if (cell.IsFull())
                         {
                             <text><i class="glyphicon glyphicon-@(@Model.PlayerId != cell.Card.PlayerId ? "fire" : "tint") text-@(@Model.PlayerId != cell.Card.PlayerId ? "danger" : "info")"></i><br />@cell.Card.Value</text>
